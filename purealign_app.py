@@ -290,9 +290,9 @@ else:
 # ==============================================================================
 st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
 st.subheader("📋 Historial de Pacientes y Cotizaciones Registradas")
-st.markdown("Consulta en tiempo real sincronizada con Google Sheets.")
+st.markdown("Consulta en tiempo real.")
 
 if not df_pacientes.empty:
     st.dataframe(df_pacientes, use_container_width=True, hide_index=True)
 else:
-    st.info("No hay órdenes registradas aún en Google Sheets.")
+    st.info("No hay órdenes registradas este mes.")
