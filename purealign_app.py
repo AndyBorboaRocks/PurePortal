@@ -102,11 +102,7 @@ SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 
 @st.cache_resource
 def conectar_google_sheets():
-    directorio_actual = os.path.dirname(os.path.abspath(__file__))
-    ruta_credenciales = os.path.join(directorio_actual, "credentials.json")
-    creds = ServiceAccountCredentials.from_json_keyfile_name(ruta_credenciales, SCOPE)
-    client = gspread.authorize(creds)
-    # Si estamos en Streamlit Cloud, lee los Secrets
+     # Si estamos en Streamlit Cloud, lee los Secrets
     if "gheets" in st.secrets:
         creds_dict = dict(st.secrets["gheets"])
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
@@ -115,6 +111,7 @@ def conectar_google_sheets():
         directorio_actual = os.path.dirname(os.path.abspath(__file__))
         ruta_credenciales = os.path.join(directorio_actual, "credentials.json")
         creds = ServiceAccountCredentials.from_json_keyfile_name(ruta_credenciales, SCOPE)
+   
         
     client = gspread.authorize(creds)
     return client.open("Purealign_DB_Trabajo")
