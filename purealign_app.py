@@ -214,13 +214,24 @@ with col_sec1:
         seguro_basic = 2560.0
         precio_final = costo_linea + seguro_basic
         rango_paquete = f"{cant_alineadores_num} Alineadores (Plan Pure Basic)"
-        contenido_paquete = f"💲 **Costo Alineadores ({cant_alineadores_num} x $670):** ${costo_linea:,.0f} MXN<br><br>🛡️ **Seguro Pure Basic:** $2,560 MXN<br><br>✔️ **12 Sets de refinamiento extra** incluidos<br><br>✔️ **1 Planeación digital** incluida"
+        # linea_costo = f"💲 **Costo Alineadores ({cant_alineadores_num} x $670):** ${costo_linea:,.2f} MXN<br><br>"
+        linea_seguro = f"🛡️ **Seguro Pure Basic:** $2,560.00 MXN<br><br>"
+        linea_sets = "✔️ **12 Sets de refinamiento extra** incluidos<br><br>"
+        linea_planeacion = "✔️ **1 Planeación digital** incluida"
+                
+        contenido_paquete = linea_sets + linea_planeacion
+               
     elif "Pure Extended" in paquete_seleccionado:
         costo_linea = cant_alineadores_num * 640.0
         seguro_extended = 4250.0
         precio_final = costo_linea + seguro_extended
         rango_paquete = f"{cant_alineadores_num} Alineadores (Plan Pure Extended)"
-        contenido_paquete = f"💲 **Costo Alineadores ({cant_alineadores_num} x $640):** ${costo_linea:,.0f} MXN<br><br>🛡️ **Seguro Pure Extended:** $4,250 MXN<br><br>✔️ **25 Sets de refinamiento extra** incluidos<br><br>✔️ **1 Planeación digital** incluida"
+        # linea_costo = f"💲 **Costo Alineadores ({cant_alineadores_num} x $640):** ${costo_linea:,.2f} MXN<br><br>"
+        linea_seguro = f"🛡️ **Seguro Pure Extended:** $4,250.00 MXN<br><br>"
+        linea_sets = "✔️ **25 Sets de refinamiento extra** incluidos<br><br>"
+        linea_planeacion = "✔️ **1 Planeación digital** incluida"
+                
+        contenido_paquete = linea_seguro + linea_sets + linea_planeacion
 
     st.markdown('</div></div>', unsafe_allow_html=True)
 
