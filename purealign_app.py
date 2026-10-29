@@ -102,20 +102,16 @@ SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 
 @st.cache_resource
 def conectar_google_sheets():
-     # Si estamos en Streamlit Cloud, lee los Secrets
     if "gheets" in st.secrets:
         creds_dict = dict(st.secrets["gheets"])
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
     else:
-        # Si estás en tu computadora local, lee el archivo físico credentials.json
         directorio_actual = os.path.dirname(os.path.abspath(__file__))
         ruta_credenciales = os.path.join(directorio_actual, "credentials.json")
         creds = ServiceAccountCredentials.from_json_keyfile_name(ruta_credenciales, SCOPE)
-   
         
     client = gspread.authorize(creds)
     return client.open("Purealign_DB_Trabajo")
-    
 
 try:
     db = conectar_google_sheets()
@@ -129,11 +125,12 @@ try:
     df_adicionales = pd.DataFrame(sheet_adicionales.get_all_records())
     df_pacientes = pd.DataFrame(sheet_pacientes.get_all_records())
 except Exception as e:
-    # Valores por defecto si no hay conexión activa para pruebas locales
+    # Respaldo actualizado con tus productos correctos (Chewies, Removedor, Foam, Case)
     df_adicionales = pd.DataFrame([
-        {"Producto": "Botella de Limpieza para Alineadores", "Precio": 250},
-        {"Producto": "Contenedor / Caja para Alineadores", "Precio": 180},
-        {"Producto": "Kit de Retenedores Post-Tratamiento", "Precio": 1200}
+        {"Producto": "Chewies dentales", "Precio": 85},
+        {"Producto": "Removedor", "Precio": 85},
+        {"Producto": "Foam", "Precio": 150},
+        {"Producto": "Case", "Precio": 150}
     ])
     df_pacientes = pd.DataFrame()
 
@@ -161,13 +158,20 @@ else:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==============================================================================
+# 1. PRIMERO CALCULAMOS LOS ADICIONALES PARA TENER EL TOTAL GLOBAL DISPONIBLE
+# ==============================================================================
+# Esto nos permite calcular el total sumando paquete + adicionales en tiempo real.
+# Definimos valores por defecto para que la sección superior los pueda consultar.
+total_adicionales = 0.0
+
+# ==============================================================================
 # SECCIÓN SUPERIOR: REGISTRO (IZQ) Y CALCULADORA INTELIGENTE (DER)
 # ==============================================================================
 col_sec1, col_sec2 = st.columns([3, 2])
 
 with col_sec1:
     st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
-    
+    st.markdown('<div class="card-box"><div class="card-content">', unsafe_allow_html=True)
     st.subheader("👤 Registro de Paciente y Selección de Paquete")
     
     nombre_paciente = st.text_input("Nombre Completo del Paciente")
@@ -192,52 +196,37 @@ with col_sec1:
     else:
         cant_alineadores_num = st.number_input("Cantidad exacta de alineadores (21 a 40):", min_value=21, max_value=40, value=21, step=1)
 
-    # --- LÓGICA FINANCIERA Y DE TOKENS ---
+    # --- LÓGICA FINANCIERA ACTUALIZADA ---
     precio_final = 0.0
     rango_paquete = ""
     contenido_paquete = ""
-    tokens_consumidos = 0
 
     if "10 Alineadores" in paquete_seleccionado:
         precio_final = 5200.0
         rango_paquete = "10 Alineadores Individuales ($520 c/u)"
         contenido_paquete = "⚠️ **Esquema Individual:** Cobro por unidad ($520 MXN). Sin sets de refinamiento extra ni planeaciones."
-        tokens_consumidos = 10  # 1 token por alineador, sin tokens de seguro/planeación
     elif "15 Alineadores" in paquete_seleccionado:
         precio_final = 7800.0
         rango_paquete = "15 Alineadores Individuales ($520 c/u)"
         contenido_paquete = "⚠️ **Esquema Individual:** Cobro por unidad ($520 MXN). Sin sets de refinamiento extra ni planeaciones."
-        tokens_consumidos = 15  # 1 token por alineador, sin tokens de seguro/planeación
     elif "Pure Basic" in paquete_seleccionado:
         costo_linea = cant_alineadores_num * 670.0
         seguro_basic = 2560.0
         precio_final = costo_linea + seguro_basic
         rango_paquete = f"{cant_alineadores_num} Alineadores (Plan Pure Basic)"
-        # linea_costo = f"💲 **Costo Alineadores ({cant_alineadores_num} x $670):** ${costo_linea:,.2f} MXN<br><br>"
-        linea_seguro = f"🛡️ **Seguro Pure Basic:** $2,560.00 MXN<br><br>"
-        linea_sets = "✔️ **12 Sets de refinamiento extra** incluidos<br><br>"
-        linea_planeacion = "✔️ **1 Planeación digital** incluida"
-        
-        contenido_paquete = linea_sets + linea_planeacion
-        tokens_consumidos = cant_alineadores_num + 5  # Alineadores + 5 tokens fijos por seguro/planeación
+        contenido_paquete = f"💲 **Costo Alineadores ({cant_alineadores_num} x $670):** ${costo_linea:,.0f} MXN<br><br>🛡️ **Seguro Pure Basic:** $2,560 MXN<br><br>✔️ **12 Sets de refinamiento extra** incluidos<br><br>✔️ **1 Planeación digital** incluida"
     elif "Pure Extended" in paquete_seleccionado:
         costo_linea = cant_alineadores_num * 640.0
         seguro_extended = 4250.0
         precio_final = costo_linea + seguro_extended
         rango_paquete = f"{cant_alineadores_num} Alineadores (Plan Pure Extended)"
-        # linea_costo = f"💲 **Costo Alineadores ({cant_alineadores_num} x $640):** ${costo_linea:,.2f} MXN<br><br>"
-        linea_seguro = f"🛡️ **Seguro Pure Extended:** $4,250.00 MXN<br><br>"
-        linea_sets = "✔️ **25 Sets de refinamiento extra** incluidos<br><br>"
-        linea_planeacion = "✔️ **1 Planeación digital** incluida"
-        
-        contenido_paquete = linea_seguro + linea_sets + linea_planeacion
-        tokens_consumidos = cant_alineadores_num + 5  # Alineadores + 5 tokens fijos por seguro/planeación
+        contenido_paquete = f"💲 **Costo Alineadores ({cant_alineadores_num} x $640):** ${costo_linea:,.0f} MXN<br><br>🛡️ **Seguro Pure Extended:** $4,250 MXN<br><br>✔️ **25 Sets de refinamiento extra** incluidos<br><br>✔️ **1 Planeación digital** incluida"
 
     st.markdown('</div></div>', unsafe_allow_html=True)
 
 with col_sec2:
     st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
-    
+    st.markdown('<div class="card-box"><div class="card-content">', unsafe_allow_html=True)
     st.subheader("📊 Resumen y Desglose Inteligente")
     
     st.markdown(f"""
@@ -255,44 +244,46 @@ with col_sec2:
     """, unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f"**SUBTOTAL PACIENTE:** <span class='total-destacado'>${precio_final:,.0f} MXN</span>", unsafe_allow_html=True)
+    
+    # Aquí calculamos temporalmente el total con el bloque de abajo para mostrarlo dinámicamente arriba si se desea, 
+    # o lo dejamos consolidado en la parte inferior. Lo mostraremos al pie de la tarjeta:
     st.markdown('</div></div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==============================================================================
-# SECCIÓN MEDIA: TOKENS Y PRODUCTOS ADICIONALES (CON CONTADOR)
+# SECCIÓN MEDIA: PRODUCTOS ADICIONALES (ANCHO COMPLETO CON CONTEO)
 # ==============================================================================
 st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
-
+st.markdown('<div class="card-box"><div class="card-content">', unsafe_allow_html=True)
 st.subheader("🛍️ Productos Adicionales (Conteo y Precios)")
-    
-total_adicionales = 0.0
+
 if not df_adicionales.empty:
     for idx, row in df_adicionales.iterrows():
         prod_nombre = row["Producto"]
         prod_precio = float(row["Precio"])
-            
+        
         # Fila interactiva con contador numérico de cantidad por producto
         col_prod1, col_prod2 = st.columns([2, 1])
         with col_prod1:
             st.markdown(f"<p style='margin-top: 8px; font-weight: 500;'>{prod_nombre} (${prod_precio:,.0f} c/u)</p>", unsafe_allow_html=True)
         with col_prod2:
             cantidad_prod = st.number_input(f"Cant_{idx}", min_value=0, max_value=20, value=0, step=1, label_visibility="collapsed", key=f"qty_{idx}")
-            
+        
         total_adicionales += (prod_precio * cantidad_prod)
 else:
     st.warning("No hay productos adicionales configurados.")
-        
-    total_general = precio_final + total_adicionales
     
-    st.markdown("---")
-    st.markdown(f"**Subtotal Adicionales:** ${total_adicionales:,.0f} MXN")
-    st.markdown(f"### 💳 Total a Consultar: <span class='total-destacado'>${total_general:,.0f} MXN</span>", unsafe_allow_html=True)
-    
-    st.markdown('</div></div>', unsafe_allow_html=True)
+total_general = precio_final + total_adicionales
 
-#st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"**Subtotal Adicionales:** ${total_adicionales:,.0f} MXN")
+# Cambiado a "TOTAL" y sumando correctamente los adicionales en tiempo real
+st.markdown(f"### 💳 TOTAL: <span class='total-destacado'>${total_general:,.0f} MXN</span>", unsafe_allow_html=True)
+
+st.markdown('</div></div>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ==============================================================================
 # SECCIÓN INFERIOR: TABLA HISTÓRICA DE PACIENTES (SOLO CONSULTA)
@@ -304,4 +295,4 @@ st.markdown("Consulta en tiempo real.")
 if not df_pacientes.empty:
     st.dataframe(df_pacientes, use_container_width=True, hide_index=True)
 else:
-    st.info("No hay órdenes registradas este mes.")
+    st.info("No hay registro de este mes.")
