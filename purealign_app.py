@@ -257,6 +257,12 @@ with col_sec2:
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Aquí calculamos temporalmente el total con el bloque de abajo para mostrarlo dinámicamente arriba si se desea, 
+    st.markdown(f"""
+    <div class="subtotal-paquete-box">
+        <span style="font-size: 14px; font-weight: 600; color: #4A3E93;">Subtotal Paquete Base:</span><br>
+        <span style="font-size: 20px; font-weight: bold; color: #6C5BC2;">${precio_final:,.0f} MXN</span>
+    </div>
+    """, unsafe_allow_html=True)
     # o lo dejamos consolidado en la parte inferior. Lo mostraremos al pie de la tarjeta:
     st.markdown('</div></div>', unsafe_allow_html=True)
 
