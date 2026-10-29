@@ -106,7 +106,19 @@ def conectar_google_sheets():
     ruta_credenciales = os.path.join(directorio_actual, "credentials.json")
     creds = ServiceAccountCredentials.from_json_keyfile_name(ruta_credenciales, SCOPE)
     client = gspread.authorize(creds)
+    # Si estamos en Streamlit Cloud, lee los Secrets
+    if "gheets" in st.secrets:
+        creds_dict = dict(st.secrets["gheets"])
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
+    else:
+        # Si estás en tu computadora local, lee el archivo físico credentials.json
+        directorio_actual = os.path.dirname(os.path.abspath(__file__))
+        ruta_credenciales = os.path.join(directorio_actual, "credentials.json")
+        creds = ServiceAccountCredentials.from_json_keyfile_name(ruta_credenciales, SCOPE)
+        
+    client = gspread.authorize(creds)
     return client.open("Purealign_DB_Trabajo")
+    
 
 try:
     db = conectar_google_sheets()
