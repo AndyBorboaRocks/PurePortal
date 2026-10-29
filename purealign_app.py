@@ -231,7 +231,7 @@ with col_sec1:
         linea_sets = "✔️ **25 Sets de refinamiento extra** incluidos<br><br>"
         linea_planeacion = "✔️ **1 Planeación digital** incluida"
                 
-        contenido_paquete = linea_seguro + linea_sets + linea_planeacion
+        contenido_paquete =  linea_sets + linea_planeacion
 
     st.markdown('</div></div>', unsafe_allow_html=True)
 
