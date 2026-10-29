@@ -171,7 +171,7 @@ col_sec1, col_sec2 = st.columns([3, 2])
 
 with col_sec1:
     st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
-    st.markdown('<div class="card-box"><div class="card-content">', unsafe_allow_html=True)
+    
     st.subheader("👤 Registro de Paciente y Selección de Paquete")
     
     nombre_paciente = st.text_input("Nombre Completo del Paciente")
@@ -226,7 +226,7 @@ with col_sec1:
 
 with col_sec2:
     st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
-    st.markdown('<div class="card-box"><div class="card-content">', unsafe_allow_html=True)
+   
     st.subheader("📊 Resumen y Desglose Inteligente")
     
     st.markdown(f"""
@@ -255,7 +255,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # SECCIÓN MEDIA: PRODUCTOS ADICIONALES (ANCHO COMPLETO CON CONTEO)
 # ==============================================================================
 st.markdown('<hr style="border: 2px solid #3CE2E2; margin-top: 10px; margin-bottom: 10px;">', unsafe_allow_html=True)
-st.markdown('<div class="card-box"><div class="card-content">', unsafe_allow_html=True)
+
 st.subheader("🛍️ Productos Adicionales (Conteo y Precios)")
 
 if not df_adicionales.empty:
